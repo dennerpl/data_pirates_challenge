@@ -10,6 +10,5 @@ def test_scrapper():
     assert scrapper(request_result, 'AC') == 'scrapper executado com sucesso'
 
 def test_next_page_check():
-    request_result_sp = post_request('SP', 1, 50)
-    request_result_ac = post_request('AC', 1, 50)
-    assert (next_page_check(request_result_sp) is not None) and (next_page_check(request_result_ac) is not None)
+    request_result = post_request('SP', 1, 50)
+    assert next_page_check(request_result) is not None
