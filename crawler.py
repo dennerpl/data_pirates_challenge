@@ -31,7 +31,7 @@ def scrapper(response, uf):
 
 def post_request(uf, pagini, pagfim):
     try:
-        response = requests.post('https://www2.correios.com.br/sistemas/buscacep/resultadoBuscaFaixaCEP.cfm', data={'UF': 'SP', 'qtdrow': 50, 'pagini': pagini, 'pagfim': pagfim})
+        response = requests.post('https://www2.correios.com.br/sistemas/buscacep/resultadoBuscaFaixaCEP.cfm', data={'UF': uf, 'qtdrow': 50, 'pagini': pagini, 'pagfim': pagfim})
     except:
         print('Parâmetros da requisição incorretos ou endpoint indisponível')
     return response
@@ -62,5 +62,5 @@ print('Raspagem de dados finalizada com sucesso')
 
 data.to_json('cep_list.json', orient='index')
 
-print('Os arquivos cep_list.json cep_list.csv foram escritos ou sobrescritos na pasta raiz do projeto')
+print('O arquivo cep_list.json foi escrito ou sobrescrito na pasta raiz do projeto')
 
