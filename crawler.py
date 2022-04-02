@@ -1,19 +1,8 @@
 from bs4 import BeautifulSoup
+import unicodedata
 import requests
 import pandas as pd
-
-states = [
-   'SP',
-   'MG' 
-]
-
-result = {
-    'UF': [],
-    'Localidade': [],
-    'CEP': [],
-    'Situacao': [],
-    'Tipo': []
-}
+from constants import states,data_frame_format
 
 
 def scrapper(response, uf):
@@ -28,9 +17,9 @@ def scrapper(response, uf):
         infos = site.select('table.tmptabela tr td')
 
     for info in infos:
-        result[next_key].append(info.text)
+        data_frame_format[next_key].append(info.text.encode('ascii', 'ignore').decode('utf-8'))
         if next_key == 'Localidade':
-            result['UF'].append(uf)
+            data_frame_format['UF'].append(uf)
             next_key = 'CEP'
         elif next_key == 'CEP':
             next_key = 'Situacao'
@@ -38,19 +27,40 @@ def scrapper(response, uf):
             next_key = 'Tipo'
         elif next_key == 'Tipo':
             next_key = 'Localidade'
+    return 'scrapper executado com sucesso'
 
 def post_request(uf, pagini, pagfim):
     try:
         response = requests.post('https://www2.correios.com.br/sistemas/buscacep/resultadoBuscaFaixaCEP.cfm', data={'UF': 'SP', 'qtdrow': 50, 'pagini': pagini, 'pagfim': pagfim})
     except:
-        print('Parâmetros da requisição incorretos')
+        print('Parâmetros da requisição incorretos ou endpoint indisponível')
     return response
 
-for state in states:
-    request_result = post_request(state, 1, 50)
-    scrapper(request_result, state)
+def next_page_check(response):
+    site = BeautifulSoup(response.content, 'html.parser')
+    return site.find('a', href="javascript:document.Proxima.submit('Proxima')")
 
-data = pd.DataFrame(result)
+
+for state in states:
+    print(f'Fazendo a raspagem de CEP do estado {state}')
+    first_item = 1
+    last_item = 50
+    request_result = post_request(state, first_item, last_item)
+    while next_page_check(request_result):
+        scrapper(request_result, state)
+        first_item = first_item + 50
+        last_item = last_item + 50
+        request_result = post_request(state, first_item, last_item)
+    if next_page_check(request_result) is None:
+        scrapper(request_result, state)
+
+
+data = pd.DataFrame(data_frame_format)
 
 print(data)
+print('Raspagem de dados finalizada com sucesso')
+
+data.to_json('cep_list.json', orient='index')
+
+print('Os arquivos cep_list.json cep_list.csv foram escritos ou sobrescritos na pasta raiz do projeto')
 
