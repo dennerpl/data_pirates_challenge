@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-import unicodedata
+from unidecode import unidecode
 import requests
 import pandas as pd
 from constants import states,data_frame_format
@@ -17,7 +17,7 @@ def scrapper(response, uf):
         infos = site.select('table.tmptabela tr td')
 
     for info in infos:
-        data_frame_format[next_key].append(info.text.encode('ascii', 'ignore').decode('utf-8'))
+        data_frame_format[next_key].append(unidecode(info.text))
         if next_key == 'Localidade':
             data_frame_format['UF'].append(uf)
             next_key = 'CEP'
