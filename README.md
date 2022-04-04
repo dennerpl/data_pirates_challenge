@@ -63,3 +63,4 @@ Para ativar os testes unitarios:
 ```
 pytest
 ```
+Obs: demora para chegar os resultados dos testes mas eles chegam
