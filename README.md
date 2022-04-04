@@ -50,16 +50,17 @@ pip install -r requirements.txt
 
 Para utilizar o projeto basta executar o arquivo crawler e aguardar até que o processo seja finalizado:
 ```
-.\crawler
+.\crawler.py
 ```
 
 ## Resultados
 
 Um arquivo chamado cep_list.json será gerado e podera ser vista uma previa da base de dados gerada no console
 
-## Utilização
+## Testes
 
 Para ativar os testes unitarios:
 ```
 pytest
 ```
+Obs: demora para chegar os resultados dos testes mas eles chegam
